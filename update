@@ -8,11 +8,7 @@ REPO="${GITHOME}/nagios_conf"
 
 cd "$REPO" || exit 1
 
-if git remote -v update 2>&1 |grep 'origin/master' |grep -q 'up to date'; then
-    echo "Sin cambios."
-else
-    echo "Actualizando la config de nagios."
-    /usr/bin/git pull origin master
+if [ "$1" = "updated" ]; then
     /usr/bin/rsync -a "${REPO}/etc/" "/opt/nagios/etc"
     /usr/bin/rsync -a "${REPO}/libexec/" "/opt/nagios/libexec"
     if /opt/nagios/bin/nagios -v /opt/nagios/etc/nagios.cfg; then
@@ -20,5 +16,15 @@ else
     else
         cp "$LOG_FILE" "/home/nagios/$(date +%Y%m%d_%H%M)_nagios_conf_update.log.errors"
     fi
+    exit $?
+fi
+
+if git remote -v update 2>&1 |grep 'origin/master' |grep -q 'up to date'; then
+    echo "Sin cambios."
+else
+    echo "Actualizando la config de nagios."
+    /usr/bin/git pull origin master
+    /bin/sleep 1
+    $0 "updated"
 fi
 
