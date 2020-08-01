@@ -11,5 +11,6 @@ else
     echo "Actualizando la config de nagios."
     /usr/bin/git pull origin master
     /usr/bin/rsync -a "${REPO}/etc/" "/opt/nagios/etc"
+    /usr/bin/rsync -a "${REPO}/libexec/" "/opt/nagios/libexec"
     /bin/systemctl reload nagios
 fi
