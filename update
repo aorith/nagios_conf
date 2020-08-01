@@ -17,10 +17,9 @@ if [ "$1" = "updated" ]; then
         cp "$LOG_FILE" "/home/nagios/$(date +%Y%m%d_%H%M)_nagios_conf_update.log.errors"
     fi
     exit $?
-fi
-
-if git remote -v update 2>&1 |grep 'origin/master' |grep -q 'up to date'; then
+elif git remote -v update 2>&1 |grep 'origin/master' |grep -q 'up to date'; then
     echo "Sin cambios."
+    exit 0
 else
     echo "Actualizando la config de nagios."
     /usr/bin/git pull origin master
