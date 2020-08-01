@@ -5,10 +5,11 @@ REPO="${GITHOME}/nagios_conf"
 
 cd "$REPO" || exit 1
 
-if echo "$(git remote -v update 2>&1)" |grep 'origin/master'|grep -q 'up to date'; then
-	echo "Sin cambios."
+if git remote -v update 2>&1 |grep 'origin/master' |grep -q 'up to date'; then
+    echo "Sin cambios."
 else
-	echo "Actualizando la config de nagios."
-	/usr/bin/git pull origin master
-	/usr/bin/rsync -a "${REPO}/etc/" "/opt/nagios/etc"
+    echo "Actualizando la config de nagios."
+    /usr/bin/git pull origin master
+    /usr/bin/rsync -a "${REPO}/etc/" "/opt/nagios/etc"
+    /bin/systemctl reload nagios
 fi
