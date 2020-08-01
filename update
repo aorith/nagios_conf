@@ -1,5 +1,8 @@
 #!/bin/bash
 
+LOG_FILE="/tmp/nagios_conf_update.log"
+exec > >(tee $LOG_FILE) 2>&1
+
 GITHOME="/home/nagios/githome"
 REPO="${GITHOME}/nagios_conf"
 
@@ -12,5 +15,10 @@ else
     /usr/bin/git pull origin master
     /usr/bin/rsync -a "${REPO}/etc/" "/opt/nagios/etc"
     /usr/bin/rsync -a "${REPO}/libexec/" "/opt/nagios/libexec"
-    /bin/systemctl reload nagios
+    if /opt/nagios/bin/nagios -v /opt/nagios/etc/nagios.cfg; then
+        /bin/systemctl reload nagios
+    else
+        cp "$LOG_FILE" "/home/nagios/$(date +%Y%m%d_%H%M)_nagios_conf_update.log.errors"
+    fi
 fi
+
