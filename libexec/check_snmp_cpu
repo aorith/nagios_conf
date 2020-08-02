@@ -7,11 +7,11 @@
 # Licence : GPLv2
 
 # Commands
-CMD_BASENAME="/bin/basename"
-CMD_SNMPWALK="/usr/bin/snmpwalk"
-CMD_AWK="/bin/awk"
-CMD_EXPR="/usr/bin/expr"
-CMD_GREP="/bin/grep"
+CMD_BASENAME="$(which basename)"
+CMD_SNMPWALK="$(which snmpwalk)"
+CMD_AWK="$(which awk)"
+CMD_EXPR="$(which expr)"
+CMD_GREP="$(which grep)"
 
 # Script name
 SCRIPTNAME=`$CMD_BASENAME $0`
