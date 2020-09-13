@@ -17,6 +17,7 @@ avail="$(echo "$output"|awk '{ print $7 }')"
 pcent="$(echo "$output"|awk '{ print $8 }')"
 size="$(echo "$output"|awk '{ print $9 }')"
 
+echo $output
 #perfdata
 echo -n "|"
 echo -n "Used=${used};;;;"
