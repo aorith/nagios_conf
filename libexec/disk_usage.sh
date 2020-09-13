@@ -5,7 +5,7 @@
 SERVER=$1
 MOUNT=$2
 
-output="$(ssh "aorith@${SERVER}" "df -BM --output=fstype,itotal,iused,iavail,ipcent,used,avail,pcent,size $MOUNT |tail -1")"
+output="$(ssh "aorith@${SERVER}" "df -BK --output=fstype,itotal,iused,iavail,ipcent,used,avail,pcent,size $MOUNT |tail -1")"
 
 fstype="$(echo "$output"|awk '{ print $1 }')"
 itotal="$(echo "$output"|awk '{ print $2 }')"
@@ -17,7 +17,7 @@ avail="$(echo "$output"|awk '{ print $7 }')"
 pcent="$(echo "$output"|awk '{ print $8 }')"
 size="$(echo "$output"|awk '{ print $9 }')"
 
-echo $output
+echo -n "$output"
 #perfdata
 echo -n "|"
 echo "disk_used=${used};;;; disk_total=${size};;;; percent=${pcent};90;95;;"
