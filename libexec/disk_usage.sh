@@ -20,8 +20,6 @@ size="$(echo "$output"|awk '{ print $9 }')"
 echo $output
 #perfdata
 echo -n "|"
-echo -n "Used=${used};;;;"
-echo -n "Total=${size};;;;"
-echo "Percent=${pcent},Total=${size};90;95;;"
+echo "disk_used=${used};;;; disk_total=${size};;;; percent=${pcent};90;95;;"
 
 exit $EXITCODE
