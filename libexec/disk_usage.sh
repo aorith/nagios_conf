@@ -26,6 +26,6 @@ status=0
 echo -n "$output"
 #perfdata
 echo -n "|"
-echo "disk_used=${used}KB;0;${size}KB; percent=${pcent};90;95;;"
+echo "used=${used}KB;;${size}; percent=${pcent};90;95;;"
 
 exit $status
