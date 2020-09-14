@@ -10,6 +10,7 @@ output="$(ssh "aorith@${SERVER}" "sadf -dt -- -n DEV --iface=$IFACE |grep \"${la
 [[ -z "$output" ]] && { echo "No data retrieved"; exit 3; }
 
 ## hostname;interval;timestamp;IFACE;rxpck/s;txpck/s;rxkB/s;txkB/s;rxcmp/s;txcmp/s;rxmcst/s;%ifutil
+#  0        1        2         3     4       5       6      7      8       9       10       11
 #pve;120;2020-09-14 08:28:01;enp6s0f0;38.71;20.18;36.08;2.08;0.00;0.00;0.31;0.03
 
 status=0
@@ -27,8 +28,8 @@ IFS=$old_IFS
 re='[0-9\.]+'
 [[ ! ${ARR[4]} =~ $re ]] && { echo "Error reading sadf(sar) output."; exit 3; }
 
-text="${ARR[3]} rxKB/s ${ARR[7]} txKB/s ${ARR[8]} Usage ${ARR[11]}"
-perfdata="rxKBs_s=${ARR[7]}KB;;;0; txKBs_s=${ARR[8]}KB;;;0; Usage_perc=${ARR[11]}%;;;0;100"
+text="${ARR[3]} rxKB/s ${ARR[6]} txKB/s ${ARR[7]} Usage ${ARR[11]}"
+perfdata="rxKBs_s=${ARR[6]}KB;;;0; txKBs_s=${ARR[7]}KB;;;0; Usage_perc=${ARR[11]}%;;;0;100"
 
 echo -n "$text"
 echo -n "|"
