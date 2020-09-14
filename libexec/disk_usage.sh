@@ -27,6 +27,7 @@ do
     ARR[$count]="$field"
     count=$(( count + 1 ))
 done
+IFS=$old_IFS
 
 re='[0-9]+'
 [[ ! ${ARR[4]} =~ $re ]] && { echo "Error reading sadf(sar) output."; exit 3; }
