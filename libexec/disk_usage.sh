@@ -48,7 +48,7 @@ for line in $output; do
     total=$(echo "${ARR[4]} + ${ARR[5]}" |bc )
 
     text="${text}$msg ${ARR[3]} ${ARR[5]}MB/${total}MB(${ARR[6]}%) - Iused:${ARR[9]}(${ARR[10]}%)  "
-    perfdata="${perfdata}${disk_name}_used=${ARR[5]}MB;;${total}; ${disk_name}_percent=${ARR[6]}%;$WARN;$CRIT; ${disk_name}_inodes_perc=${ARR[10]}%;$WARN;$CRIT; "
+    perfdata="${perfdata}${disk_name}_used=${ARR[5]}MB;;${total};0;${total} ${disk_name}_percent=${ARR[6]}%;$WARN;$CRIT;0;100 ${disk_name}_inodes_perc=${ARR[10]}%;$WARN;$CRIT;0;100 "
 done
 
 echo -n "$text"
