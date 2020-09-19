@@ -2,8 +2,8 @@
 set -e
 
 TEXT="$(echo "$*" |sed 's/\n/%0A/g')"
-TOKEN="$(sed -n 1p ${HOME}/secret/alarms_aorithbot.txt)"
-CHATID="$(sed -n 2p ${HOME}/secret/alarms_aorithbot.txt)"
+TOKEN="$(sed -n 1p /home/$(whoami)/secret/alarms_aorithbot.txt)"
+CHATID="$(sed -n 2p /home/$(whoami)/secret/alarms_aorithbot.txt)"
 TIME="20"
 URL="https://api.telegram.org/bot${TOKEN}/sendMessage"
 
