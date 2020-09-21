@@ -25,7 +25,9 @@ IFS=$old_IFS
 #pve;60;2020-09-15 00:01:01;0;715;0.44;0.32;0.28;2
 
 re='[0-9\.]+'
-[[ ! ${ARR[4]} =~ $re ]] && { echo "Error reading sadf(sar). ${ARR[@]}"; exit 3; }
+if [[ ! ${ARR[4]} =~ $re ]]; then
+    [[ ! ${ARR[0]} == "#" ]] && { echo "Error reading sadf(sar)."; exit 3; }
+fi
 
 run_queue_length=${ARR[3]}
 tasks=${ARR[4]}
