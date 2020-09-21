@@ -26,7 +26,10 @@ IFS=$old_IFS
 
 re='[0-9\.]+'
 if [[ ! ${ARR[4]} =~ $re ]]; then
-    [[ ! ${ARR[0]} == "#" ]] && { echo "Error reading sadf(sar)."; exit 3; }
+    # exit if first field is an '#' that means we have no data after rotate
+    [[ ${ARR[0]} == "#" ]] && exit 0
+    echo "Error reading sadf(sar) output."
+    exit 3
 fi
 
 run_queue_length=${ARR[3]}

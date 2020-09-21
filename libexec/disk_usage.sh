@@ -33,8 +33,14 @@ for line in $output; do
     done
     IFS=$old_IFS
 
-    re='[0-9]+'
-    [[ ! ${ARR[4]} =~ $re ]] && { echo "Error reading sadf(sar) output."; exit 3; }
+    re='[0-9\.]+'
+    if [[ ! ${ARR[4]} =~ $re ]]; then
+        # continue if first field is an '#' that means we have no data after rotate
+        [[ ${ARR[0]} == "#" ]] && continue
+        echo "Error reading sadf(sar) output."
+        exit 3
+    fi
+
 
     disk_name="${ARR[3]/\//r_}"
     disk_name="${disk_name//\//_}"

@@ -26,7 +26,12 @@ done
 IFS=$old_IFS
 
 re='[0-9\.]+'
-[[ ! ${ARR[4]} =~ $re ]] && { echo "Error reading sadf(sar) output."; exit 3; }
+if [[ ! ${ARR[4]} =~ $re ]]; then
+    # exit if first field is an '#' that means we have no data after rotate
+    [[ ${ARR[0]} == "#" ]] && exit 0
+    echo "Error reading sadf(sar) output."
+    exit 3
+fi
 
 text="${ARR[3]} rxKB/s ${ARR[6]} txKB/s ${ARR[7]} Usage ${ARR[11]}"
 perfdata="rxKBs_s=${ARR[6]}KB;;;0; txKBs_s=${ARR[7]}KB;;;0; Usage_perc=${ARR[11]}%;;;0;100"
