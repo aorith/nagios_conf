@@ -1,4 +1,5 @@
 #!/bin/bash
+LC_ALL=C
 
 [ $# -ne 3 ] && { echo "Bad invocation: \"$0 $*\""; exit 3; }
 
@@ -11,7 +12,7 @@ _decimal_compare() {
     [ ${1%.*} -eq ${2%.*} ] && [ ${1#*.} \> ${2#*.} ] || [ ${1%.*} -gt ${2%.*} ]
 }
 
-output="$(ssh "aorith@${SERVER}" "sar -F MOUNT 1 2 |grep 'Summary:' |grep -v '%ufsused'")"
+output="$(ssh "aorith@${SERVER}" "LC_ALL=C sar -F MOUNT 1 2 |grep 'Summary:' |grep -v '%ufsused'")"
 [[ -z "$output" ]] && { echo "No data retrieved"; exit 3; }
 
 # Summary:     MBfsfree  MBfsused   %fsused  %ufsused     Ifree     Iused    %Iused MOUNTPOINT

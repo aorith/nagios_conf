@@ -1,10 +1,11 @@
 #!/bin/bash
+LC_ALL=C
 
 [ $# -ne 1 ] && { echo "Bad invocation: \"$0 $*\""; exit 3; }
 
 SERVER=$1
 
-output="$(ssh "aorith@${SERVER}" "sar -b 1 3 |grep 'Average:'")"
+output="$(ssh "aorith@${SERVER}" "LC_ALL=C sar -b 1 3 |grep 'Average:'")"
 [[ -z "$output" ]] && { echo "No data retrieved"; exit 3; }
 
 # 08:29:53 AM       tps      rtps      wtps   bread/s   bwrtn/s
