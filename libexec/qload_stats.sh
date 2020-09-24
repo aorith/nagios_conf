@@ -1,16 +1,14 @@
 #!/bin/bash
+LC_ALL=C
 
 [ $# -ne 1 ] && { echo "Bad invocation: \"$0 $*\""; exit 3; }
 
 SERVER=$1
 
-last_entry_date="$(ssh "aorith@${SERVER}" "sadf -dt -- -q |cut -d';' -f3|tail -1")"
-output="$(ssh "aorith@${SERVER}" "sadf -dt -- -q |grep \"${last_entry_date}\"")"
+output="$(ssh "aorith@${SERVER}" "LC_ALL=C sar -q 1 3 |grep 'Average:'")"
 [[ -z "$output" ]] && { echo "No data retrieved"; exit 3; }
 
 status=0
-old_IFS=$IFS
-IFS=';'
 count=0
 ARR=()
 for field in $output;
@@ -18,26 +16,23 @@ do
     ARR[$count]="$field"
     count=$(( count + 1 ))
 done
-IFS=$old_IFS
 
-# hostname;interval;timestamp;runq-sz;plist-sz;ldavg-1;ldavg-5;ldavg-15;blocked
-# 0        1        2         3       4        5       6       7        8
-#pve;60;2020-09-15 00:01:01;0;715;0.44;0.32;0.28;2
+# 09:00:54 AM   runq-sz  plist-sz   ldavg-1   ldavg-5  ldavg-15   blocked
+# Average:            0       227      0.44      0.36      0.24         0
+#  0                  1       2        3         4         5            6
 
 re='[0-9\.]+'
 if [[ ! ${ARR[4]} =~ $re ]]; then
-    # exit if first field is an '#' that means we have no data after rotate
-    [[ ${ARR[0]} == "#" ]] && exit 0
     echo "Error reading sadf(sar) output."
     exit 3
 fi
 
-run_queue_length=${ARR[3]}
-tasks=${ARR[4]}
-load1=${ARR[5]}
-load5=${ARR[6]}
-load15=${ARR[7]}
-blocked=${ARR[8]}
+run_queue_length=${ARR[1]}
+tasks=${ARR[2]}
+load1=${ARR[3]}
+load5=${ARR[4]}
+load15=${ARR[5]}
+blocked=${ARR[6]}
 
 nprocs=$(ssh "aorith@${SERVER}" "nproc")
 perc_load1=$(echo "scale=2; (${load1}*100)/${nprocs}" |bc)
