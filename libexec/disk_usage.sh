@@ -11,50 +11,46 @@ _decimal_compare() {
     [ ${1%.*} -eq ${2%.*} ] && [ ${1#*.} \> ${2#*.} ] || [ ${1%.*} -gt ${2%.*} ]
 }
 
-last_entry_date="$(ssh "aorith@${SERVER}" "sadf -dt -- -F MOUNT|cut -d';' -f3|tail -1")"
-output="$(ssh "aorith@${SERVER}" "sadf -dt -- -F MOUNT|grep \"${last_entry_date}\"")"
+output="$(ssh "aorith@${SERVER}" "sar -F MOUNT 1 2 |grep 'Summary:' |sed 1d")"
 [[ -z "$output" ]] && { echo "No data retrieved"; exit 3; }
 
-## hostname;interval;timestamp          ;MOUNTPOINT;MBfsfree;MBfsused;%fsused;%ufsused;Ifree ;Iused;%Iused
-# nagios   ;120     ;2020-09-14 08:28:01;/         ;5400    ;2600    ;32.50  ;37.82   ;459151;65137;12.42
-#  0        1        2                   3          4        5        6       7        8      9     10
+# Summary:     MBfsfree  MBfsused   %fsused  %ufsused     Ifree     Iused    %Iused MOUNTPOINT
+# Summary:        21036     10961     34.26     36.35   1866325    230827     11.01 /var/log.hdd
+#  0              1          2         3         4       5          6          7      8
+
 
 status=0
 old_IFS=$IFS
 IFS=$'\n'
 for line in $output; do
-    IFS=';'
     count=0
     ARR=()
+    IFS=$old_IFS
     for field in $line;
     do
         ARR[$count]="$field"
         count=$(( count + 1 ))
     done
-    IFS=$old_IFS
 
     re='[0-9\.]+'
     if [[ ! ${ARR[4]} =~ $re ]]; then
-        # continue if first field is an '#' that means we have no data after rotate
-        [[ ${ARR[0]} == "#" ]] && continue
-        echo "Error reading sadf(sar) output."
+        echo "Error reading sar output."
         exit 3
     fi
 
-
-    disk_name="${ARR[3]/\//r_}"
+    disk_name="${ARR[8]/\//r_}"
     disk_name="${disk_name//\//_}"
 
     msg="OK:"
-    if _decimal_compare ${ARR[10]} $WARN; then [[ $status -ne 2 ]] && status=1; msg="WARNING:"; fi
-    if _decimal_compare ${ARR[10]} $CRIT; then status=2; msg="CRITICAL:"; fi
-    if _decimal_compare ${ARR[6]} $WARN; then [[ $status -ne 2 ]] && status=1; msg="WARNING:"; fi
-    if _decimal_compare ${ARR[6]} $CRIT; then status=2; msg="CRITICAL:"; fi
+    if _decimal_compare ${ARR[7]} $WARN; then [[ $status -ne 2 ]] && status=1; msg="WARNING:"; fi
+    if _decimal_compare ${ARR[7]} $CRIT; then status=2; msg="CRITICAL:"; fi
+    if _decimal_compare ${ARR[4]} $WARN; then [[ $status -ne 2 ]] && status=1; msg="WARNING:"; fi
+    if _decimal_compare ${ARR[4]} $CRIT; then status=2; msg="CRITICAL:"; fi
 
-    total=$(echo "${ARR[4]} + ${ARR[5]}" |bc )
+    total=$(echo "${ARR[1]} + ${ARR[2]}" |bc )
 
-    text="${text}$msg ${ARR[3]} ${ARR[5]}MB/${total}MB(${ARR[6]}%) - Iused:${ARR[9]}(${ARR[10]}%)  "
-    perfdata="${perfdata}${disk_name}_used=${ARR[5]}MB;;${total};0;${total} ${disk_name}_percent=${ARR[6]}%;$WARN;$CRIT;0;100 ${disk_name}_inodes_perc=${ARR[10]}%;$WARN;$CRIT;0;100 "
+    text="${text}$msg ${ARR[8]} ${ARR[2]}MB/${total}MB(${ARR[4]}%) - Iused:${ARR[6]}(${ARR[7]}%)  "
+    perfdata="${perfdata}${disk_name}_used=${ARR[2]}MB;;${total};0;${total} ${disk_name}_percent=${ARR[4]}%;$WARN;$CRIT;0;100 ${disk_name}_inodes_perc=${ARR[7]}%;$WARN;$CRIT;0;100 "
 done
 
 echo -n "$text"
