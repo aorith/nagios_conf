@@ -11,7 +11,7 @@ _decimal_compare() {
     [ ${1%.*} -eq ${2%.*} ] && [ ${1#*.} \> ${2#*.} ] || [ ${1%.*} -gt ${2%.*} ]
 }
 
-output="$(ssh "aorith@${SERVER}" "sar -F MOUNT 1 2 |grep 'Summary:' |sed 1d")"
+output="$(ssh "aorith@${SERVER}" "sar -F MOUNT 1 2 |grep 'Summary:' |grep -v '%ufsused'")"
 [[ -z "$output" ]] && { echo "No data retrieved"; exit 3; }
 
 # Summary:     MBfsfree  MBfsused   %fsused  %ufsused     Ifree     Iused    %Iused MOUNTPOINT
