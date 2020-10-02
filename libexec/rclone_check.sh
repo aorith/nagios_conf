@@ -2,12 +2,8 @@
 
 status=0
 SERVER=$1
-
 REMOTES="gdrive-msp gdrive-aoasir gdrive-farfe dropbox-ao"
 
-#	"total": 6710886400,
-#	"used": 2295739614,
-#	"free": 4415146786
 for remote in $REMOTES; do
     output="$(ssh "aorith@${SERVER}" "sudo -u syncthing /home/syncthing/githome/st-backup/rclone/rclone about ${remote}: --json")"
     total="$(jq '.total' <<< "$output")"
