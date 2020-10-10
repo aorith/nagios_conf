@@ -23,7 +23,11 @@ packet_loss="$(echo "$output" |grep "packet loss" |awk '{ print $6 }')"
 rta="$(echo "$output" |grep "rtt min" |awk -F'/' '{ print $5 }')"
 
 re='[0-9\.]+'
-[[ ! ${rta} =~ $re ]] && { echo "Error reading ping output."; exit 3; }
+if [[ ! ${rta} =~ $re ]]; then
+    if echo "$output"|grep -q '100%'; then rta=-1 else
+        { echo "Error reading ping output."; exit 3; }
+    fi
+fi
 
 text="rta: ${rta}ms - packet_loss ${packet_loss}"
 perfdata="rta=${rta}ms;15.000;20.000;0; packet_loss=${packet_loss};1.0;51.0;0;100"
